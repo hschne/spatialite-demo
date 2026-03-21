@@ -102,30 +102,55 @@ export default class extends Controller {
         ? (STATE_COLORS[props.state_code] ?? "#555")
         : "#555";
 
-    const stateInfo =
+    const stateRows =
       props.state_name != null
         ? `<tr>
-             <td class="pr-2 text-gray-500">State</td>
+             <td class="text-gray-400 pr-8">State</td>
              <td>
-               <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${stateColor};margin-right:4px;vertical-align:middle;"></span>
+               <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${stateColor};margin-right:6px;vertical-align:middle;"></span>
                ${props.state_name}
              </td>
            </tr>
            <tr>
-             <td class="pr-2 text-gray-500">Distance&nbsp;to&nbsp;centroid</td>
+             <td class="text-gray-400 pr-8">Distance to centroid</td>
              <td>${distanceKm}</td>
            </tr>`
         : `<tr><td colspan="2" class="text-gray-400 italic">Outside all states</td></tr>`;
 
-    new maplibregl.Popup({ className: "location-popup", closeButton: false })
+    new maplibregl.Popup({
+      className: "location-popup",
+      closeButton: false,
+      maxWidth: "320px",
+    })
       .setLngLat(coords)
       .setHTML(
-        `<strong class="block mb-1">${props.name}</strong>
-         <table class="text-sm">
-           <tr><td class="pr-2 text-gray-500">Lat</td><td>${props.latitude}</td></tr>
-           <tr><td class="pr-2 text-gray-500">Lng</td><td>${props.longitude}</td></tr>
-           ${stateInfo}
-         </table>`,
+        `<div style="padding:16px 20px;font-family:inherit;">
+           <p style="font-weight:700;font-size:1rem;margin:0 0 12px;">${props.name}</p>
+           <table style="border-collapse:collapse;font-size:0.875rem;width:100%;">
+             <tr>
+               <td style="color:#9ca3af;padding-bottom:6px;padding-right:32px;">Lat</td>
+               <td style="padding-bottom:6px;">${props.latitude}</td>
+             </tr>
+             <tr>
+               <td style="color:#9ca3af;padding-bottom:6px;padding-right:32px;">Lng</td>
+               <td style="padding-bottom:6px;">${props.longitude}</td>
+             </tr>
+             <tr>
+               <td style="color:#9ca3af;padding-bottom:6px;padding-right:32px;">State</td>
+               <td style="padding-bottom:6px;">
+                 ${
+                   props.state_name != null
+                     ? `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${stateColor};margin-right:6px;vertical-align:middle;"></span>${props.state_name}`
+                     : `<span style="color:#9ca3af;font-style:italic;">—</span>`
+                 }
+               </td>
+             </tr>
+             <tr>
+               <td style="color:#9ca3af;padding-right:32px;">Distance to centroid</td>
+               <td>${distanceKm}</td>
+             </tr>
+           </table>
+         </div>`,
       )
       .addTo(this.map);
   }
