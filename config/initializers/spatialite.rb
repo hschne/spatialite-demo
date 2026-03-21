@@ -31,6 +31,23 @@ ActiveSupport.on_load(:active_record_sqlite3adapter) do
   ignore_tables.uniq!
 end
 
+# Protect spatial_ref_sys (and other SpatiaLite system tables) from being
+# emptied when Rails parallel test workers call truncate_tables to reset state.
+# Without this guard, geodesic Distance(..., 1) returns NULL because the 6559
+# SRID rows are wiped between worker resets.
+ActiveSupport.on_load(:active_record) do
+  require "active_record/connection_adapters/abstract/database_statements"
+
+  ActiveRecord::ConnectionAdapters::DatabaseStatements.prepend(Module.new do
+    def truncate_tables(*table_names)
+      safe_names = table_names.reject do |name|
+        SPATIALITE_TABLES.include?(name) || name.match?(SPATIALITE_TABLE_REGEX)
+      end
+      super(*safe_names)
+    end
+  end)
+end
+
 ActiveSupport.on_load(:active_record) do
   require "active_record/connection_adapters/sqlite3_adapter"
 

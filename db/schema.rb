@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_18_204239) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_21_091038) do
   create_table "locations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.binary "geometry"
@@ -18,5 +18,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_204239) do
     t.decimal "longitude", precision: 10, scale: 6
     t.string "name", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "states", force: :cascade do |t|
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.binary "geometry"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_states_on_code", unique: true
+    t.index ["name"], name: "index_states_on_name", unique: true
   end
 end
