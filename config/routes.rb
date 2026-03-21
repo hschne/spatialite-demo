@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   root "locations#index"
-  resources :locations, only: [:new, :create]
+  resources :locations, only: [:create]
 
   # Reveal health status on /up that returns 200 if the app boots without exceptions, 500 otherwise.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

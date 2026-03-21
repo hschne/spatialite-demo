@@ -41,6 +41,30 @@ export default class extends Controller {
       this.#addCentroids();
       this.#addLocations();
     });
+
+    this.map.doubleClickZoom.disable();
+
+    this.map.on("click", (e) => {
+      const features = this.map.queryRenderedFeatures(e.point, {
+        layers: ["locations-circle"],
+      });
+
+      if (features.length) {
+        this.#showPopup(features[0]);
+      }
+    });
+
+    this.map.on("dblclick", (e) => {
+      const features = this.map.queryRenderedFeatures(e.point, {
+        layers: ["locations-circle"],
+      });
+
+      if (!features.length) {
+        this.dispatch("click", {
+          detail: { lat: e.lngLat.lat, lng: e.lngLat.lng },
+        });
+      }
+    });
   }
 
   disconnect() {
@@ -63,6 +87,48 @@ export default class extends Controller {
   }
 
   // ── Private ────────────────────────────────────────────────────────────────
+
+  #showPopup(feature) {
+    const props = feature.properties;
+    const coords = feature.geometry.coordinates.slice();
+
+    const distanceKm =
+      props.distance_to_centroid != null
+        ? (props.distance_to_centroid / 1000).toFixed(1) + " km"
+        : "—";
+
+    const stateColor =
+      props.state_code != null
+        ? (STATE_COLORS[props.state_code] ?? "#555")
+        : "#555";
+
+    const stateInfo =
+      props.state_name != null
+        ? `<tr>
+             <td class="pr-2 text-gray-500">State</td>
+             <td>
+               <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${stateColor};margin-right:4px;vertical-align:middle;"></span>
+               ${props.state_name}
+             </td>
+           </tr>
+           <tr>
+             <td class="pr-2 text-gray-500">Distance&nbsp;to&nbsp;centroid</td>
+             <td>${distanceKm}</td>
+           </tr>`
+        : `<tr><td colspan="2" class="text-gray-400 italic">Outside all states</td></tr>`;
+
+    new maplibregl.Popup({ className: "location-popup", closeButton: false })
+      .setLngLat(coords)
+      .setHTML(
+        `<strong class="block mb-1">${props.name}</strong>
+         <table class="text-sm">
+           <tr><td class="pr-2 text-gray-500">Lat</td><td>${props.latitude}</td></tr>
+           <tr><td class="pr-2 text-gray-500">Lng</td><td>${props.longitude}</td></tr>
+           ${stateInfo}
+         </table>`,
+      )
+      .addTo(this.map);
+  }
 
   #addStates() {
     if (this.map.getSource("states")) {
@@ -140,9 +206,7 @@ export default class extends Controller {
       },
     });
 
-    // Inner dot – diamond-shaped via a rotated square would need an icon;
-    // instead we use a smaller circle in the state's own colour with a
-    // crosshair effect achieved by a thick stroke.
+    // Inner dot in the state's own colour with a thick stroke.
     this.map.addLayer({
       id: "centroids-dot",
       type: "circle",
@@ -178,48 +242,6 @@ export default class extends Controller {
         "circle-stroke-width": 2,
         "circle-stroke-color": "#ffffff",
       },
-    });
-
-    this.map.on("click", "locations-circle", (e) => {
-      const props = e.features[0].properties;
-      const coords = e.features[0].geometry.coordinates.slice();
-
-      const distanceKm =
-        props.distance_to_centroid != null
-          ? (props.distance_to_centroid / 1000).toFixed(1) + " km"
-          : "—";
-
-      const stateColor =
-        props.state_code != null
-          ? (STATE_COLORS[props.state_code] ?? "#555")
-          : "#555";
-
-      const stateInfo =
-        props.state_name != null
-          ? `<tr>
-               <td class="pr-2 text-gray-500">State</td>
-               <td>
-                 <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${stateColor};margin-right:4px;vertical-align:middle;"></span>
-                 ${props.state_name}
-               </td>
-             </tr>
-             <tr>
-               <td class="pr-2 text-gray-500">Distance&nbsp;to&nbsp;centroid</td>
-               <td>${distanceKm}</td>
-             </tr>`
-          : `<tr><td colspan="2" class="text-gray-400 italic">Outside all states</td></tr>`;
-
-      new maplibregl.Popup()
-        .setLngLat(coords)
-        .setHTML(
-          `<strong class="block mb-1">${props.name}</strong>
-           <table class="text-sm">
-             <tr><td class="pr-2 text-gray-500">Lat</td><td>${props.latitude.toFixed(6)}</td></tr>
-             <tr><td class="pr-2 text-gray-500">Lng</td><td>${props.longitude.toFixed(6)}</td></tr>
-             ${stateInfo}
-           </table>`,
-        )
-        .addTo(this.map);
     });
 
     this.map.on("mouseenter", "locations-circle", () => {
