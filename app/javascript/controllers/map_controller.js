@@ -15,6 +15,30 @@ export default class extends Controller {
     this.map.on("load", () => {
       this.#addLocations();
     });
+
+    this.map.doubleClickZoom.disable();
+
+    this.map.on("click", (e) => {
+      const features = this.map.queryRenderedFeatures(e.point, {
+        layers: ["locations-circle"],
+      });
+
+      if (features.length) {
+        this.#showPopup(features[0]);
+      }
+    });
+
+    this.map.on("dblclick", (e) => {
+      const features = this.map.queryRenderedFeatures(e.point, {
+        layers: ["locations-circle"],
+      });
+
+      if (!features.length) {
+        this.dispatch("click", {
+          detail: { lat: e.lngLat.lat, lng: e.lngLat.lng },
+        });
+      }
+    });
   }
 
   disconnect() {
@@ -24,6 +48,21 @@ export default class extends Controller {
   locationsValueChanged() {
     if (!this.map?.isStyleLoaded()) return;
     this.#addLocations();
+  }
+
+  #showPopup(feature) {
+    const props = feature.properties;
+    const coords = feature.geometry.coordinates.slice();
+
+    new maplibregl.Popup({ className: "location-popup", closeButton: false })
+      .setLngLat(coords)
+      .setHTML(
+        `<div class="px-3 py-2">
+          <p class="font-semibold text-gray-900 text-sm">${props.name}</p>
+          <p class="text-xs text-gray-500 mt-1">${props.latitude}, ${props.longitude}</p>
+        </div>`,
+      )
+      .addTo(this.map);
   }
 
   #addLocations() {
@@ -45,22 +84,6 @@ export default class extends Controller {
           "circle-stroke-width": 2,
           "circle-stroke-color": "#ffffff",
         },
-      });
-
-      this.map.on("click", "locations-circle", (e) => {
-        const props = e.features[0].properties;
-        const coords = e.features[0].geometry.coordinates.slice();
-
-        new maplibregl.Popup()
-          .setLngLat(coords)
-          .setHTML(
-            `
-            <strong>${props.name}</strong><br>
-            Lat: ${props.latitude.toFixed(6)}<br>
-            Lng: ${props.longitude.toFixed(6)}
-          `,
-          )
-          .addTo(this.map);
       });
 
       this.map.on("mouseenter", "locations-circle", () => {

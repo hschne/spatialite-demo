@@ -14,8 +14,8 @@ class Location < ApplicationRecord
       geometry: JSON.parse(geojson_str),
       properties: {
         name: name,
-        latitude: latitude.to_f,
-        longitude: longitude.to_f
+        latitude: format("%.6f", latitude),
+        longitude: format("%.6f", longitude)
       }
     }
   end
