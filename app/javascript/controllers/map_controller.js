@@ -124,29 +124,29 @@ export default class extends Controller {
     })
       .setLngLat(coords)
       .setHTML(
-        `<div style="padding:16px 20px;font-family:inherit;">
-           <p style="font-weight:700;font-size:1rem;margin:0 0 12px;">${props.name}</p>
-           <table style="border-collapse:collapse;font-size:0.875rem;width:100%;">
+        `<div class="px-5 py-4">
+           <p class="font-bold text-base mb-3">${props.name}</p>
+           <table class="text-sm w-full">
              <tr>
-               <td style="color:#9ca3af;padding-bottom:6px;padding-right:32px;">Lat</td>
-               <td style="padding-bottom:6px;">${props.latitude}</td>
+               <td class="text-gray-400 pr-8 pb-1.5">Lat</td>
+               <td class="pb-1.5">${props.latitude}</td>
              </tr>
              <tr>
-               <td style="color:#9ca3af;padding-bottom:6px;padding-right:32px;">Lng</td>
-               <td style="padding-bottom:6px;">${props.longitude}</td>
+               <td class="text-gray-400 pr-8 pb-1.5">Lng</td>
+               <td class="pb-1.5">${props.longitude}</td>
              </tr>
              <tr>
-               <td style="color:#9ca3af;padding-bottom:6px;padding-right:32px;">State</td>
-               <td style="padding-bottom:6px;">
+               <td class="text-gray-400 pr-8 pb-1.5">State</td>
+               <td class="pb-1.5">
                  ${
                    props.state_name != null
-                     ? `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${stateColor};margin-right:6px;vertical-align:middle;"></span>${props.state_name}`
-                     : `<span style="color:#9ca3af;font-style:italic;">—</span>`
+                     ? `<span class="inline-block w-2.5 h-2.5 rounded-full mr-1.5 align-middle" style="background:${stateColor};"></span>${props.state_name}`
+                     : `<span class="text-gray-400 italic">—</span>`
                  }
                </td>
              </tr>
              <tr>
-               <td style="color:#9ca3af;padding-right:32px;">Distance to centroid</td>
+               <td class="text-gray-400 pr-8">Distance to centroid</td>
                <td>${distanceKm}</td>
              </tr>
            </table>
