@@ -2,10 +2,11 @@
 
 <div
   class="relative w-full h-screen"
-  data-controller="map-index"
-  data-map-index-locations-value="<%= @locations_geojson %>"
-  data-map-index-states-value="<%= @states_geojson %>"
-  data-map-index-centroids-value="<%= @centroids_geojson %>"
+  data-controller="map location-form"
+  data-map-locations-value="<%= @locations_geojson %>"
+  data-map-states-value="<%= @states_geojson %>"
+  data-map-centroids-value="<%= @centroids_geojson %>"
+  data-action="map:click->location-form#open"
 >
   <div data-map-target="map" class="w-full h-full"></div>
 
