@@ -1,7 +1,8 @@
 class LocationsController < ApplicationController
   def index
-    @location = Location.new
-    @locations_geojson = Location.all.map(&:to_geojson).to_json
+    @locations_geojson = Location.to_feature_collection.to_json
+    @states_geojson = State.to_feature_collection.to_json
+    @centroids_geojson = State.to_centroids_feature_collection.to_json
   end
 
   def create
