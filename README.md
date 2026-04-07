@@ -1,24 +1,6 @@
-# README
+# SpatiaLite & Ruby on Rails
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is the demo app that accompanies these two posts on spatial queries with SQLite, SpatiaLite, and Rails:
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+1. [Getting Started with SpatiaLite on Ruby on Rails](https://www.hansschnedlitz.com/writing/2026/03/16/spatial-queries-with-sqlite-and-rails) 
+2. [Spatial Queries with SpatiaLite and Ruby on Rails](https://www.hansschnedlitz.com/writing/2026/03/30/spatial-queries-with-spatialite-and-ruby-on-rails).
